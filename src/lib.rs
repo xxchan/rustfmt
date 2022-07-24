@@ -138,6 +138,8 @@ pub enum ErrorKind {
     /// Invalid glob pattern in `ignore` configuration option.
     #[error("Invalid glob pattern found in ignore list: {0}")]
     InvalidGlobPattern(ignore::Error),
+    #[error("Error when formatting Cargo.toml: {0}")]
+    CargoTomlError(String),
 }
 
 impl ErrorKind {
