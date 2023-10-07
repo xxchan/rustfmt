@@ -32,3 +32,7 @@ ac = 1
 
 [a.z]
 az = 1
+
+# Very long (from std’s Cargo.toml)
+[target.'cfg(any(all(target_family = "wasm", target_os = "unknown"), target_os = "xous", all(target_vendor = "fortanix", target_env = "sgx")))' .dependencies]
+dlmalloc = { version = "0.2.4", features = ["rustc-dep-of-std"] }

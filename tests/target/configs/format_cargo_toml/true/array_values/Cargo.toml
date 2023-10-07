@@ -1,0 +1,70 @@
+# rustfmt-format_cargo_toml: true
+[package]
+name = "std"
+version = "0.0.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/rust-lang/rust.git"
+description = "The Rust Standard Library"
+
+[lib]
+crate-type = ["dylib", "rlib"]
+
+[dependencies]
+alloc = { path = "../alloc", public = true }
+cfg-if = { version = "1.0", features = ["rustc-dep-of-std"] }
+core = { path = "../core", public = true }
+panic_abort = { path = "../panic_abort" }
+panic_unwind = { path = "../panic_unwind", optional = true }
+
+[dependencies.libc]
+version = "0.2.148"
+default-features = false
+features = ["rustc-dep-of-std"]
+public = true
+
+[dependencies.reqwest]
+version = "0.11"
+features = ["blocking", "rustls-tls", "rustls-tls-native-roots"]
+optional = true
+default-features = false
+
+[dependencies.std_detect]
+path = "../stdarch/crates/std_detect"
+default-features = false
+features = ["rustc-dep-of-std"]
+
+[target.'cfg(not(all(windows, target_env = "msvc", not(target_vendor = "uwp"))))' .dependencies]
+miniz_oxide = { version = "0.7.0", optional = true, default-features = false }
+addr2line = { version = "0.21.0", optional = true, default-features = false }
+
+[target.'cfg(not(all(windows, target_env = "msvc", not(target_vendor = "uwp"))))' .dependencies.object]
+version = "0.32.0"
+default-features = false
+optional = true
+features = ["read_core", "elf", "macho", "pe", "unaligned", "archive"]
+
+[target.'cfg(windows)' .dependencies]
+winreg = "0.51"
+windows = { version = "0.51", features = ["Win32_Foundation", "Win32_NetworkManagement_Dns"] }
+windows-sys = { version = "0.48", features = ["Win32_Security_Cryptography", "Win32_Foundation"] }
+
+[target.'cfg(windows)' .dependencies.winapi]
+version = "0.3"
+features = ["std", "sspi", "rpcdce", "impl-default", "timezoneapi", "wincrypt"]
+
+[features]
+backtrace = [
+    "gimli-symbolize",
+    "addr2line/rustc-dep-of-std",
+    "object/rustc-dep-of-std",
+    "miniz_oxide/rustc-dep-of-std"
+]
+gimli-symbolize = []
+# Make panics and failed asserts immediately abort without formatting any message
+panic_immediate_abort = ["core/panic_immediate_abort"]
+std_detect_dlsym_getauxval = ["std_detect/std_detect_dlsym_getauxval"]
+std_detect_env_override = ["std_detect/std_detect_env_override"]
+# Enable std_detect default features for stdarch/crates/std_detect:
+# https://github.com/rust-lang/stdarch/blob/master/crates/std_detect/Cargo.toml
+std_detect_file_io = ["std_detect/std_detect_file_io"]
