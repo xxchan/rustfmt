@@ -258,8 +258,12 @@ impl VisitMut for KeyValue {
             // will remove decors and set the key to the bare key
             key.fmt();
         } else {
-            // add a space after the key
-            key.decor_mut().set_suffix(" ");
+            if value.is_value() {
+                // add a space after the key
+                key.decor_mut().set_suffix(" ");
+            } else {
+                key.decor_mut().set_suffix("");
+            }
         }
         // start all key names at the start of a line, but preserve comments
         key.decor_mut()
