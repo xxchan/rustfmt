@@ -151,6 +151,22 @@ impl VisitMut for SortKey {
                     (_, "description") => Ordering::Less,
                     _ => k1.cmp(k2),
                 })
+            } else if key == "workspace" {
+                let table = match section.as_table_mut() {
+                    Some(table) => table,
+                    None => {
+                        // workspace should be a table
+                        self.error = Some(ErrorKind::ParseError);
+                        return;
+                    }
+                };
+                // "members" is last
+                // everything else is sorted alphabetically
+                table.sort_values_by(|k1, _, k2, _| match (k1.get(), k2.get()) {
+                    ("members", _) => Ordering::Greater,
+                    (_, "members") => Ordering::Less,
+                    _ => k1.cmp(k2),
+                })
             } else {
                 self.visit_item_mut(section)
             }
